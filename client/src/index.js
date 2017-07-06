@@ -6,7 +6,7 @@ import registerServiceWorker from './registerServiceWorker';
 import { SocketProvider } from 'socket.io-react';
 import io from 'socket.io-client';
  
-const socket = io.connect('http://145.24.211.150:8080');
+const socket = io.connect('http://localhost:8080');
 
 render(
   <SocketProvider socket={socket}>

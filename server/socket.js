@@ -21,6 +21,7 @@ const BGR2GRAY = 'CV_BGR2GRAY';
 const GREEN = [0, 255, 0]; // B, G, R
 const WEBCAM_PRODUCT_ID = 57863;
 let x = 0;
+const buffers = [];
 
 let original;
 
@@ -33,58 +34,64 @@ usbDetect.find((err, devices) => {
       const camera = new cv.VideoCapture(cameraCount);
       camera.setWidth(width);
       camera.setHeight(height);
-      cameras.push({ camera, firstImage: null });
+      cameras.push({
+        camera,
+        firstImage: null,
+        id: Math.floor(Math.random() * 1000) + 1
+      });
       cameraCount++;
     }
   }, this);
-  const c = new cv.VideoCapture(cameraCount);
-  c.setWidth(width);
-  c.setHeight(height);
-  cameras.push({ camera: c, firstImage: null });
+  // const c = new cv.VideoCapture(cameraCount);
+  // c.setWidth(width);
+  // c.setHeight(height);
+  // cameras.push({ camera: c, firstImage: null, id: Math.floor(Math.random() * 1000) + 1 });
 
+  const socket = io.connect('http://localhost:8080');
 
-  const socket = io.connect('http://145.24.211.150:8080');
   socket.on('connect', () => {
-    socket.emit('cameras', { count: cameraCount });
+    socket.emit('cameras', { cameras });
     setInterval(() => {
       cameras.forEach((response, index) => {
-        let { firstImage } = response;
-        const { camera } = response;
-        camera.read((err, im) => {
-          if (err) {
-            throw err;
-          }
-          
-          if (_.isArrayLike(im.size(), [height, width])) {
-            original = im.clone();
-            im.cvtColor(BGR2GRAY);
-            im.gaussianBlur([15, 15]);
-            x++;
-
-            if (x % 20 === 0) {
-              firstImage = im.clone();
-              cameras[index].firstImage = firstImage;
+          let { firstImage } = response;
+          const { camera, id } = response;
+          camera.read((err, im) => {
+            if (err) {
+              throw err;
             }
+            original = im.clone();
+            if (_.isArrayLike(im.size(), [height, width])) {
+              im.cvtColor(BGR2GRAY);
+              im.gaussianBlur([15, 15]);
+              x++;
 
-            const diff = new cv.Matrix();
-            if (firstImage) {
-              diff.absDiff(firstImage, im);
+              if (x % 20 === 0) {
+                firstImage = im.clone();
+                cameras[index].firstImage = firstImage;
+              }
 
-              diff.canny(lowThresh, highThresh);
-              diff.dilate(nIters);
+              const diff = new cv.Matrix();
+              if (firstImage) {
+                diff.absDiff(firstImage, im);
 
-              const contours = diff.findContours();
-              for (let i = 0; i < contours.size(); i++) {
-                if (contours.area(i) > minArea) {
-                  const rec = contours.boundingRect(i);
-                  original.rectangle([rec.x, rec.y], [rec.width, rec.height], GREEN, 2);
+                diff.canny(lowThresh, highThresh);
+                diff.dilate(nIters);
+
+                const contours = diff.findContours();
+                for (let i = 0; i < contours.size(); i++) {
+                  if (contours.area(i) > minArea) {
+                    const rec = contours.boundingRect(i);
+                    original.rectangle([rec.x, rec.y], [rec.width, rec.height], GREEN, 2);
+                    console.log('MOTION');
+                  }
                 }
               }
             }
-            socket.emit(`camera${index}`, { buffer: original.toBuffer() });
-          }
-        });
+            buffers.push({ buffer: original.toBuffer(), id });
+          });
       });
+      socket.emit('cameraBuff', { buffers });
+      buffers.length = 0;
     }, interval);
   });
 });

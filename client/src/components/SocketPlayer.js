@@ -21,7 +21,7 @@ class SocketPlayer extends Component {
 
 
     this.socket.on(`camera${cameraId}`, data => {
-      let base64String = base64_arraybuffer.encode(data.buffer);
+      let base64String = base64_arraybuffer.encode(data);
       img.onload = function () {
         ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
       };
@@ -32,7 +32,7 @@ class SocketPlayer extends Component {
 
   render() {
     return(
-      <canvas width={640} height={480} ref="camera" />
+      <canvas style={{marginLeft:20}} width={640} height={480} ref="camera" />
     )
   }
 }
