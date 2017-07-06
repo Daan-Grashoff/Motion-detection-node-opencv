@@ -8,7 +8,7 @@ class SocketPlayer extends Component {
   constructor(props) {
     super(props);
     this.socket = props.socket;
-    console.log(this.props.cameraId);
+    // console.log(this.props.cameraId);
   }
 
   componentDidMount() {

@@ -3,19 +3,22 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const path = require('path');
+const io = require('socket.io')(server);
 
-// app.get('/', (req, res) => {
-//   res.sendFile(path.join(__dirname + '/build/index.html'));
-// });
+
 app.use(express.static(path.join(__dirname + '/build')));
 
 server.listen(8080);
 app.use(express.static('client'));
 
-// "devDependencies": {
-  //   // "react-scripts": "1.0.10"
-  // },
-
-  // "build": "react-scripts build",
-    // "test": "react-scripts test --env=jsdom",
-    // "eject": "react-scripts eject"
+io.on('connection', (socket) => {
+  socket.on('sensorData', data => {
+    socket.broadcast.emit('sensorData', data);
+  })
+  socket.on('camera0', data => {
+    socket.broadcast.emit('camera0', data);
+  })
+  socket.on('camera1', data => {
+    socket.broadcast.emit('camera1', data);
+  })
+})
