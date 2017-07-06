@@ -2,40 +2,37 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { socketConnect } from 'socket.io-react';
 import './App.css';
-import base64_arraybuffer from 'base64-arraybuffer';
+import SocketPlayer from './components/SocketPlayer';
 
 
 class App extends Component {
   constructor(props, context) {
     super(props, context);
     this.socket = props.socket;
+    this.state = {
+      cameras:0
+    }
   }
 
-
-  componentDidMount() {
-    var img = new Image();
-    let canvas = ReactDOM.findDOMNode(this.refs.camera);
-    let ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = '#333';
-    ctx.fillText('Loading', canvas.width/2-30, canvas.height/3);
-    
-
-    this.socket.on('camera', data => {
-      let base64String = base64_arraybuffer.encode(data.buffer);
-      img.onload = function () {
-        ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-      };
-      img.src = 'data:image/png;base64,' + base64String;
+  componentDidMount() { 
+    this.socket.on('cameras', count => {
+      this.setState({
+        cameras:count.count
+      })
+      console.log(count);
     })
-
+    
   }
 
+
+ 
 
   render() {
     return (
       <div className="App">
-        <canvas width={640} height={480} ref="camera" />
+        {[...Array(this.state.cameras + 1)].map((_, n) => {
+          return(<SocketPlayer cameraId={n}/>) 
+        })}
       </div>
     );
   }
