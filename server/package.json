@@ -12,12 +12,11 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.15.3",
+    "usb-detection": "^1.4.0",
     "lodash": "^4.17.4",
     "opencv": "^6.0.0",
     "socket.io": "^2.0.3",
-    "socket.io-client": "^2.0.3",
-    "usb": "^1.2.0",
-    "usb-detection": "^1.4.0"
+    "socket.io-client": "^2.0.3"
   },
   "devDependencies": {
     "eslint-config-rallycoding": "^3.2.0"
