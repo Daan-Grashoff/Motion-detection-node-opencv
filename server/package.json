@@ -13,7 +13,7 @@
   "dependencies": {
     "express": "^4.15.3",
     "lodash": "^4.17.4",
-    "opencv": "git+https://github.com/peterbraden/node-opencv.git",
+    "opencv": "^6.0.0",
     "socket.io": "^2.0.3",
     "usb": "^1.2.0",
     "usb-detection": "^1.4.0"
