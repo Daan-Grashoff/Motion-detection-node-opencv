@@ -30,7 +30,7 @@ const cameras = [];
 
 // usbDetect.find((err, devices) => {
   [1].forEach((element) => {
-    if (element.productId === WEBCAM_PRODUCT_ID) {
+    // if (element.productId === WEBCAM_PRODUCT_ID) {
       const camera = new cv.VideoCapture(cameraCount);
       camera.setWidth(width);
       camera.setHeight(height);
@@ -40,7 +40,7 @@ const cameras = [];
         id: Math.floor(Math.random() * 1000) + 1
       });
       cameraCount++;
-    }
+    // }
   }, this);
   // const c = new cv.VideoCapture(cameraCount);
   // c.setWidth(width);
