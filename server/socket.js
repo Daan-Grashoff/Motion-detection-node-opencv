@@ -1,5 +1,5 @@
 const cv = require('opencv');
-const usbDetect = require('usb-detection');
+// const usbDetect = require('usb-detection');
 const _ = require('lodash');
 const io = require('socket.io-client');
 
@@ -28,8 +28,8 @@ let original;
 let cameraCount = 0;
 const cameras = [];
 
-usbDetect.find((err, devices) => {
-  devices.forEach((element) => {
+// usbDetect.find((err, devices) => {
+  [1].forEach((element) => {
     if (element.productId === WEBCAM_PRODUCT_ID) {
       const camera = new cv.VideoCapture(cameraCount);
       camera.setWidth(width);
@@ -94,4 +94,4 @@ usbDetect.find((err, devices) => {
       buffers.length = 0;
     }, interval);
   });
-});
+// });
